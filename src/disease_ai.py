@@ -1,8 +1,3 @@
-"""
-Disease AI Model - Disease Type Prediction
-Predicts disease type based on pollutant, environmental and health-related factors
-"""
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -23,19 +18,8 @@ warnings.filterwarnings('ignore')
 
 
 class DiseaseAI:
-    """
-    AI Model for predicting disease type
-    """
 
     def __init__(self, filepath):
-        """
-        Initialize the model with dataset
-
-        Parameters:
-        -----------
-        filepath : str
-            Path to the CSV file
-        """
         self.df = pd.read_csv(filepath)
         self.disease_type_models = {}
         self.encoders = {}
@@ -45,27 +29,18 @@ class DiseaseAI:
         self.best_disease_model = None
         self.disease_type_encoder = None
 
-        # Create output directory for model artifacts
         self.output_dir = 'models'
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
-            print(f"✓ Created output directory: {self.output_dir}/")
+            print(f"Created output directory: {self.output_dir}/")
 
-        print(f"✓ Dataset loaded: {self.df.shape[0]} rows, {self.df.shape[1]} columns")
+        print(f"Dataset loaded: {self.df.shape[0]} rows, {self.df.shape[1]} columns")
 
     def preprocess_data(self):
-        """
-        Preprocess data for disease type model training
-
-        Returns:
-        --------
-        X_train, X_test, y_train, y_test, target_classes
-        """
         print("\n" + "="*80)
         print("DATA PREPROCESSING - DISEASE TYPE".center(80))
         print("="*80)
 
-        # Select features (aligned with soil_contamination_scientific.csv)
         feature_cols = [
             'Pollutant_Type',
             'Total_Concentration_mg_kg',
@@ -92,22 +67,19 @@ class DiseaseAI:
 
         target_col = 'Disease_Type'
 
-        # Create feature and target datasets
         X = self.df[feature_cols].copy()
         y = self.df[target_col].copy()
 
-        print(f"\n✓ Features selected: {len(feature_cols)}")
-        print(f"✓ Target variable: {target_col}")
+        print(f"\nFeatures selected: {len(feature_cols)}")
+        print(f"Target variable: {target_col}")
 
-        # Identify categorical and numerical columns
         categorical_cols = X.select_dtypes(include=['object']).columns.tolist()
         numerical_cols = X.select_dtypes(include=[np.number]).columns.tolist()
 
-        print(f"\n📊 Categorical features: {len(categorical_cols)}")
-        print(f"📊 Numerical features: {len(numerical_cols)}")
+        print(f"\nCategorical features: {len(categorical_cols)}")
+        print(f"Numerical features: {len(numerical_cols)}")
 
-        # Encode categorical variables
-        print("\n🔄 Encoding categorical variables...")
+        print("\nEncoding categorical variables...")
         for col in categorical_cols:
             if col not in self.encoders:
                 le = LabelEncoder()
@@ -116,30 +88,26 @@ class DiseaseAI:
             else:
                 X[col] = self.encoders[col].transform(X[col].astype(str))
 
-        print("✓ Encoding completed")
+        print("Encoding completed")
 
-        # Encode target variable
         self.disease_type_encoder = LabelEncoder()
         y_encoded = self.disease_type_encoder.fit_transform(y)
         target_classes = self.disease_type_encoder.classes_
 
-        print(f"\n🎯 Target classes: {list(target_classes)}")
-        print(f"🎯 Number of classes: {len(target_classes)}")
+        print(f"\nTarget classes: {list(target_classes)}")
+        print(f"Number of classes: {len(target_classes)}")
 
-        # Store feature names
         if self.feature_names is None:
             self.feature_names = X.columns.tolist()
 
-        # Split data
         X_train, X_test, y_train, y_test = train_test_split(
             X, y_encoded, test_size=0.2, random_state=42, stratify=y_encoded
         )
 
-        print(f"\n📊 Training set: {X_train.shape[0]} samples")
-        print(f"📊 Testing set: {X_test.shape[0]} samples")
+        print(f"\nTraining set: {X_train.shape[0]} samples")
+        print(f"Testing set: {X_test.shape[0]} samples")
 
-        # Scale features
-        print("\n⚖️ Scaling features...")
+        print("\nScaling features...")
         if self.scaler is None:
             self.scaler = StandardScaler()
             X_train_scaled = pd.DataFrame(
@@ -160,25 +128,12 @@ class DiseaseAI:
             index=X_test.index
         )
 
-        print("✓ Scaling completed")
+        print("Scaling completed")
         print("="*80 + "\n")
 
         return X_train_scaled, X_test_scaled, y_train, y_test, target_classes
 
     def train_disease_type_models(self, X_train, X_test, y_train, y_test, target_classes):
-        """
-        Train models for disease type prediction
-
-        Parameters:
-        -----------
-        X_train, X_test, y_train, y_test : Training and testing datasets
-        target_classes : list
-            List of target class names
-
-        Returns:
-        --------
-        dict : Dictionary of trained models and their performance
-        """
         print("\n" + "="*80)
         print("DISEASE TYPE MODEL TRAINING".center(80))
         print("="*80)
@@ -194,16 +149,13 @@ class DiseaseAI:
         results = {}
 
         for name, model in models_to_train.items():
-            print(f"\n🔧 Training {name}...")
+            print(f"\nTraining {name}...")
 
-            # Train model
             model.fit(X_train, y_train)
 
-            # Make predictions
             y_pred_train = model.predict(X_train)
             y_pred_test = model.predict(X_test)
 
-            # Calculate metrics
             train_acc = accuracy_score(y_train, y_pred_train)
             test_acc = accuracy_score(y_test, y_pred_test)
             train_f1 = f1_score(y_train, y_pred_train, average='weighted')
@@ -211,7 +163,6 @@ class DiseaseAI:
             test_precision = precision_score(y_test, y_pred_test, average='weighted')
             test_recall = recall_score(y_test, y_pred_test, average='weighted')
 
-            # Store results
             results[name] = {
                 'model': model,
                 'train_accuracy': train_acc,
@@ -229,31 +180,20 @@ class DiseaseAI:
 
             self.disease_type_models[name] = model
 
-            print(f"   ✓ Train Accuracy: {train_acc:.4f} | Test Accuracy: {test_acc:.4f}")
-            print(f"   ✓ Train F1:       {train_f1:.4f} | Test F1:       {test_f1:.4f}")
-            print(f"   ✓ Test Precision: {test_precision:.4f}")
-            print(f"   ✓ Test Recall:    {test_recall:.4f}")
+            print(f"   Train Accuracy: {train_acc:.4f} | Test Accuracy: {test_acc:.4f}")
+            print(f"   Train F1:       {train_f1:.4f} | Test F1:       {test_f1:.4f}")
+            print(f"   Test Precision: {test_precision:.4f}")
+            print(f"   Test Recall:    {test_recall:.4f}")
 
         print("\n" + "="*80 + "\n")
 
         return results, y_test, target_classes
 
     def compare_models(self, results, model_type='disease_type'):
-        """
-        Compare model performances
-
-        Parameters:
-        -----------
-        results : dict
-            Dictionary of model results
-        model_type : str
-            For naming / logging (kept for compatibility)
-        """
         print("\n" + "="*80)
         print(f"MODEL COMPARISON - {model_type.upper()}".center(80))
         print("="*80 + "\n")
 
-        # Create comparison dataframe
         comparison_data = []
         for name, result in results.items():
             comparison_data.append({
@@ -270,36 +210,22 @@ class DiseaseAI:
         print(comparison_df.to_string(index=False))
         print("\n" + "="*80)
 
-        # Select best model
         best_model_name = comparison_df.iloc[0]['Model']
         self.best_disease_model_name = best_model_name
         self.best_disease_model = results[best_model_name]['model']
 
-        print(f"\n🏆 Best Disease Type Model: {best_model_name}")
-        print(f"   ✓ Test Accuracy: {comparison_df.iloc[0]['Test_Accuracy']:.4f}")
-        print(f"   ✓ Test F1 Score: {comparison_df.iloc[0]['Test_F1']:.4f}")
-        print(f"   ✓ Test Precision: {comparison_df.iloc[0]['Test_Precision']:.4f}")
-        print(f"   ✓ Test Recall: {comparison_df.iloc[0]['Test_Recall']:.4f}")
+        print(f"\nBest Disease Type Model: {best_model_name}")
+        print(f"   Test Accuracy: {comparison_df.iloc[0]['Test_Accuracy']:.4f}")
+        print(f"   Test F1 Score: {comparison_df.iloc[0]['Test_F1']:.4f}")
+        print(f"   Test Precision: {comparison_df.iloc[0]['Test_Precision']:.4f}")
+        print(f"   Test Recall: {comparison_df.iloc[0]['Test_Recall']:.4f}")
 
         print("\n" + "="*80 + "\n")
 
         return comparison_df
 
     def plot_confusion_matrices(self, results, target_classes, model_type='disease_type', save=True):
-        """
-        Plot confusion matrices for all models
 
-        Parameters:
-        -----------
-        results : dict
-            Dictionary of model results
-        target_classes : list
-            List of target class names
-        model_type : str
-            Used only for naming the saved file
-        save : bool
-            Whether to save plots
-        """
         n_models = len(results)
         fig, axes = plt.subplots(2, 2, figsize=(16, 14))
         axes = axes.ravel()
@@ -328,18 +254,6 @@ class DiseaseAI:
         plt.show()
 
     def plot_model_comparison(self, results, model_type='disease_type', save=True):
-        """
-        Plot model performance comparison
-
-        Parameters:
-        -----------
-        results : dict
-            Dictionary of model results
-        model_type : str
-            Used only for naming the saved file
-        save : bool
-            Whether to save plots
-        """
         model_names = list(results.keys())
         test_acc = [results[name]['test_accuracy'] for name in model_names]
         test_f1 = [results[name]['test_f1'] for name in model_names]
@@ -348,28 +262,24 @@ class DiseaseAI:
 
         fig, axes = plt.subplots(2, 2, figsize=(16, 12))
 
-        # Accuracy
         axes[0, 0].barh(model_names, test_acc, color='steelblue', edgecolor='black')
         axes[0, 0].set_xlabel('Accuracy')
         axes[0, 0].set_title('Model Comparison - Accuracy', fontweight='bold')
         axes[0, 0].invert_yaxis()
         axes[0, 0].set_xlim([0, 1])
 
-        # F1 Score
         axes[0, 1].barh(model_names, test_f1, color='coral', edgecolor='black')
         axes[0, 1].set_xlabel('F1 Score')
         axes[0, 1].set_title('Model Comparison - F1 Score', fontweight='bold')
         axes[0, 1].invert_yaxis()
         axes[0, 1].set_xlim([0, 1])
 
-        # Precision
         axes[1, 0].barh(model_names, test_precision, color='seagreen', edgecolor='black')
         axes[1, 0].set_xlabel('Precision')
         axes[1, 0].set_title('Model Comparison - Precision', fontweight='bold')
         axes[1, 0].invert_yaxis()
         axes[1, 0].set_xlim([0, 1])
 
-        # Recall
         axes[1, 1].barh(model_names, test_recall, color='gold', edgecolor='black')
         axes[1, 1].set_xlabel('Recall')
         axes[1, 1].set_title('Model Comparison - Recall', fontweight='bold')
@@ -385,15 +295,7 @@ class DiseaseAI:
         plt.show()
 
     def save_model(self, filepath='disease_type_model.pkl'):
-        """
-        Save the trained disease type model and preprocessors
 
-        Parameters:
-        -----------
-        filepath : str
-            Path to save the disease type model (default saves to models/ directory)
-        """
-        # If only filename provided, save to output directory
         if not os.path.dirname(filepath):
             filepath = os.path.join(self.output_dir, filepath)
 
@@ -406,35 +308,21 @@ class DiseaseAI:
             'target_encoder': self.disease_type_encoder
         }
         joblib.dump(disease_package, filepath)
-        print(f"✓ Disease type model saved to {filepath}")
+        print(f"Disease type model saved to {filepath}")
 
     def predict_disease_type(self, input_data):
-        """
-        Predict disease type for new data
 
-        Parameters:
-        -----------
-        input_data : dict or pd.DataFrame
-            Input features
-
-        Returns:
-        --------
-        str : Predicted disease type
-        """
         if isinstance(input_data, dict):
             input_df = pd.DataFrame([input_data])
         else:
             input_df = input_data.copy()
 
-        # Encode categorical variables
         for col, encoder in self.encoders.items():
             if col in input_df.columns:
                 input_df[col] = encoder.transform(input_df[col].astype(str))
 
-        # Scale features
         input_scaled = self.scaler.transform(input_df[self.feature_names])
 
-        # Predict disease type
         disease_pred = self.best_disease_model.predict(input_scaled)
         disease_type = self.disease_type_encoder.inverse_transform(disease_pred)[0]
 
@@ -449,11 +337,9 @@ def main():
     print("DISEASE AI - DISEASE TYPE PREDICTION".center(80))
     print("="*80 + "\n")
 
-    # Initialize model
     filepath = 'data/soil_contamination_scientific.csv'
     model = DiseaseAI(filepath)
 
-    # Train Disease Type Models
     print("\n" + "▶"*40)
     print("PART 1: DISEASE TYPE PREDICTION")
     print("▶"*40 + "\n")
@@ -470,12 +356,11 @@ def main():
         disease_results, model_type='disease_type', save=True
     )
 
-    # Save disease type model
     model.save_model('disease_type_model.pkl')
 
     print("\n" + "="*80)
-    print("✓ DISEASE TYPE AI MODEL TRAINING COMPLETED!".center(80))
-    print(f"✓ All outputs saved to '{model.output_dir}/' folder".center(80))
+    print("DISEASE TYPE AI MODEL TRAINING COMPLETED!".center(80))
+    print(f"All outputs saved to '{model.output_dir}/' folder".center(80))
     print("="*80 + "\n")
 
 

@@ -1,8 +1,3 @@
-"""
-Utility functions for the Soil Pollution & Disease Detection Project
-Contains shared functions for data processing, encoding, and visualization
-"""
-
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder, StandardScaler
@@ -18,21 +13,9 @@ warnings.filterwarnings('ignore')
 
 
 def load_data(filepath):
-    """
-    Load the soil pollution dataset
-    
-    Parameters:
-    -----------
-    filepath : str
-        Path to the CSV file
-        
-    Returns:
-    --------
-    pd.DataFrame : Loaded dataset
-    """
     try:
         df = pd.read_csv(filepath)
-        print(f"✓ Data loaded successfully: {df.shape[0]} rows, {df.shape[1]} columns")
+        print(f"Data loaded successfully: {df.shape[0]} rows, {df.shape[1]} columns")
         return df
     except Exception as e:
         print(f"✗ Error loading data: {e}")
@@ -40,18 +23,6 @@ def load_data(filepath):
 
 
 def get_data_info(df):
-    """
-    Get comprehensive information about the dataset
-    
-    Parameters:
-    -----------
-    df : pd.DataFrame
-        Input dataframe
-        
-    Returns:
-    --------
-    dict : Dictionary containing data information
-    """
     info = {
         'shape': df.shape,
         'columns': df.columns.tolist(),
@@ -65,23 +36,6 @@ def get_data_info(df):
 
 
 def encode_categorical_features(df, categorical_cols, method='label'):
-    """
-    Encode categorical features
-    
-    Parameters:
-    -----------
-    df : pd.DataFrame
-        Input dataframe
-    categorical_cols : list
-        List of categorical column names
-    method : str
-        Encoding method ('label' or 'onehot')
-        
-    Returns:
-    --------
-    pd.DataFrame : DataFrame with encoded features
-    dict : Dictionary of encoders
-    """
     df_encoded = df.copy()
     encoders = {}
     
@@ -99,23 +53,6 @@ def encode_categorical_features(df, categorical_cols, method='label'):
 
 
 def scale_features(X_train, X_test, numerical_cols):
-    """
-    Scale numerical features using StandardScaler
-    
-    Parameters:
-    -----------
-    X_train : pd.DataFrame
-        Training features
-    X_test : pd.DataFrame
-        Testing features
-    numerical_cols : list
-        List of numerical column names
-        
-    Returns:
-    --------
-    X_train_scaled, X_test_scaled : Scaled dataframes
-    scaler : Fitted scaler object
-    """
     scaler = StandardScaler()
     
     X_train_scaled = X_train.copy()
@@ -128,42 +65,10 @@ def scale_features(X_train, X_test, numerical_cols):
 
 
 def split_data(X, y, test_size=0.2, random_state=42):
-    """
-    Split data into training and testing sets
-    
-    Parameters:
-    -----------
-    X : pd.DataFrame
-        Features
-    y : pd.Series or pd.DataFrame
-        Target variable(s)
-    test_size : float
-        Proportion of test set
-    random_state : int
-        Random seed
-        
-    Returns:
-    --------
-    X_train, X_test, y_train, y_test
-    """
     return train_test_split(X, y, test_size=test_size, random_state=random_state, shuffle=True)
 
 
 def calculate_regression_metrics(y_true, y_pred):
-    """
-    Calculate regression metrics
-    
-    Parameters:
-    -----------
-    y_true : array-like
-        True values
-    y_pred : array-like
-        Predicted values
-        
-    Returns:
-    --------
-    dict : Dictionary of metrics
-    """
     metrics = {
         'RMSE': np.sqrt(mean_squared_error(y_true, y_pred)),
         'MAE': mean_absolute_error(y_true, y_pred),
@@ -174,22 +79,6 @@ def calculate_regression_metrics(y_true, y_pred):
 
 
 def calculate_classification_metrics(y_true, y_pred, labels=None):
-    """
-    Calculate classification metrics
-    
-    Parameters:
-    -----------
-    y_true : array-like
-        True labels
-    y_pred : array-like
-        Predicted labels
-    labels : list
-        List of label names
-        
-    Returns:
-    --------
-    dict : Dictionary of metrics
-    """
     metrics = {
         'Accuracy': accuracy_score(y_true, y_pred),
         'F1_Score_Weighted': f1_score(y_true, y_pred, average='weighted'),
@@ -201,22 +90,6 @@ def calculate_classification_metrics(y_true, y_pred, labels=None):
 
 
 def plot_confusion_matrix(cm, labels, title='Confusion Matrix', figsize=(10, 8), save_path=None):
-    """
-    Plot confusion matrix
-    
-    Parameters:
-    -----------
-    cm : array-like
-        Confusion matrix
-    labels : list
-        Class labels
-    title : str
-        Plot title
-    figsize : tuple
-        Figure size
-    save_path : str
-        Path to save figure
-    """
     plt.figure(figsize=figsize)
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=labels, yticklabels=labels)
     plt.title(title, fontsize=16, fontweight='bold')
@@ -231,22 +104,6 @@ def plot_confusion_matrix(cm, labels, title='Confusion Matrix', figsize=(10, 8),
 
 
 def plot_feature_importance(importance_df, top_n=20, title='Feature Importance', figsize=(12, 8), save_path=None):
-    """
-    Plot feature importance
-    
-    Parameters:
-    -----------
-    importance_df : pd.DataFrame
-        DataFrame with 'feature' and 'importance' columns
-    top_n : int
-        Number of top features to display
-    title : str
-        Plot title
-    figsize : tuple
-        Figure size
-    save_path : str
-        Path to save figure
-    """
     plt.figure(figsize=figsize)
     
     # Sort and get top N features
@@ -266,22 +123,6 @@ def plot_feature_importance(importance_df, top_n=20, title='Feature Importance',
 
 
 def plot_actual_vs_predicted(y_true, y_pred, title='Actual vs Predicted', figsize=(10, 6), save_path=None):
-    """
-    Plot actual vs predicted values for regression
-    
-    Parameters:
-    -----------
-    y_true : array-like
-        True values
-    y_pred : array-like
-        Predicted values
-    title : str
-        Plot title
-    figsize : tuple
-        Figure size
-    save_path : str
-        Path to save figure
-    """
     plt.figure(figsize=figsize)
     
     plt.scatter(y_true, y_pred, alpha=0.5, s=30)
@@ -305,22 +146,6 @@ def plot_actual_vs_predicted(y_true, y_pred, title='Actual vs Predicted', figsiz
 
 
 def plot_residuals(y_true, y_pred, title='Residual Plot', figsize=(10, 6), save_path=None):
-    """
-    Plot residuals for regression analysis
-    
-    Parameters:
-    -----------
-    y_true : array-like
-        True values
-    y_pred : array-like
-        Predicted values
-    title : str
-        Plot title
-    figsize : tuple
-        Figure size
-    save_path : str
-        Path to save figure
-    """
     residuals = y_true - y_pred
     
     plt.figure(figsize=figsize)
@@ -339,16 +164,6 @@ def plot_residuals(y_true, y_pred, title='Residual Plot', figsize=(10, 6), save_
 
 
 def print_metrics(metrics, title="Model Performance Metrics"):
-    """
-    Print metrics in a formatted way
-    
-    Parameters:
-    -----------
-    metrics : dict
-        Dictionary of metrics
-    title : str
-        Title for the metrics display
-    """
     print("\n" + "="*60)
     print(f"{title:^60}")
     print("="*60)
@@ -364,18 +179,6 @@ def print_metrics(metrics, title="Model Performance Metrics"):
 
 
 def save_predictions(y_true, y_pred, filename='predictions.csv'):
-    """
-    Save predictions to a CSV file
-    
-    Parameters:
-    -----------
-    y_true : array-like
-        True values
-    y_pred : array-like
-        Predicted values
-    filename : str
-        Output filename
-    """
     results_df = pd.DataFrame({
         'Actual': y_true,
         'Predicted': y_pred,
@@ -383,7 +186,7 @@ def save_predictions(y_true, y_pred, filename='predictions.csv'):
     })
     
     results_df.to_csv(filename, index=False)
-    print(f"✓ Predictions saved to {filename}")
+    print(f"Predictions saved to {filename}")
 
 
 if __name__ == "__main__":

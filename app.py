@@ -1,8 +1,3 @@
-"""
-Streamlit App for Soil Pollution & Disease AI System
-FIXED version with correct categorical values matching the dataset
-"""
-
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -12,15 +7,13 @@ import joblib
 import os
 from PIL import Image
 
-# Page config
 st.set_page_config(
     page_title="Soil Pollution & Disease AI",
-    page_icon="🌱",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS
 st.markdown("""
     <style>
     .main-header {
@@ -69,7 +62,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Dataset categorical values (ACTUAL values from the dataset)
 DATASET_VALUES = {
     'regions': ['Africa', 'Asia', 'Australia', 'Europe', 'North America', 'South America'],
     'countries': ['Argentina', 'Australia', 'Bangladesh', 'Brazil', 'Canada', 'Chile', 'China', 
@@ -125,7 +117,7 @@ def load_disease_model():
 def main():
     """Main application"""
     
-    st.markdown('<h1 class="main-header">🌱 Soil Pollution & Disease AI System</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="main-header">Soil Pollution & Disease AI System</h1>', unsafe_allow_html=True)
     
     st.markdown("""
     <div style='text-align: center; font-size: 1.2rem; color: #555; margin-bottom: 2rem;'>
@@ -133,30 +125,29 @@ def main():
     </div>
     """, unsafe_allow_html=True)
     
-    st.sidebar.title("🔍 Navigation")
+    st.sidebar.title("Navigation")
     st.sidebar.markdown("---")
     
-    # Removed "Dataset Properties" from navigation
     page = st.sidebar.radio(
         "Select a tool:",
-        ["🏠 Home", "📊 Concentration Predictor", "🏥 Disease Predictor", 
-         "📊 Dataset Visualizations", "🔍 Model Performance", "ℹ️ About"]
+        ["Home", "Concentration Predictor", "Disease Predictor", 
+         "Dataset Visualizations", "Model Performance", "About"]
     )
     
     st.sidebar.markdown("---")
-    st.sidebar.info("💡 Train models using concentration_ai.py and disease_ai.py first!")
+    st.sidebar.info("Train models using concentration_ai.py and disease_ai.py first!")
     
-    if page == "🏠 Home":
+    if page == "Home":
         show_home()
-    elif page == "📊 Concentration Predictor":
+    elif page == "Concentration Predictor":
         show_concentration_predictor()
-    elif page == "🏥 Disease Predictor":
+    elif page == "Disease Predictor":
         show_disease_predictor()
-    elif page == "📊 Dataset Visualizations":
+    elif page == "Dataset Visualizations":
         show_dataset_visualizations()
-    elif page == "🔍 Model Performance":
+    elif page == "Model Performance":
         show_model_performance()
-    elif page == "ℹ️ About":
+    elif page == "About":
         show_about()
 
 
@@ -169,7 +160,7 @@ def show_home():
     with col1:
         st.markdown("""
         <div class="metric-card">
-        <h3>🎯 What We Offer</h3>
+        <h3>What We Offer</h3>
         <ul>
             <li><b>Concentration Prediction:</b> Predict pollutant levels using 17 features</li>
             <li><b>Disease Detection:</b> Identify disease types using 21 features</li>
@@ -182,7 +173,7 @@ def show_home():
     with col2:
         st.markdown("""
         <div class="metric-card">
-        <h3>🔬 Key Features</h3>
+        <h3>Key Features</h3>
         <ul>
             <li>ML models (Random Forest, XGBoost, LightGBM)</li>
             <li>pH-based bioavailability analysis</li>
@@ -194,57 +185,54 @@ def show_home():
         """, unsafe_allow_html=True)
     
     st.markdown("---")
-    st.markdown("### 🤖 Model Status")
+    st.markdown("### Model Status")
     
     col1, col2 = st.columns(2)
     
     with col1:
         conc_model = load_concentration_model()
         if conc_model:
-            st.success("✅ Concentration Model: Loaded")
+            st.success("Concentration Model: Loaded")
             st.caption(f"Model: {conc_model.get('model_name', 'Unknown')}")
             st.caption(f"Features: {len(conc_model.get('feature_names', []))}")
         else:
-            st.error("❌ Concentration Model: Not Found")
+            st.error("Concentration Model: Not Found")
             st.info("Run: python concentration_ai.py")
     
     with col2:
         disease_model = load_disease_model()
         if disease_model:
-            st.success("✅ Disease Model: Loaded")
+            st.success("Disease Model: Loaded")
             st.caption(f"Model: {disease_model.get('model_name', 'Unknown')}")
             st.caption(f"Features: {len(disease_model.get('feature_names', []))}")
         else:
-            st.error("❌ Disease Model: Not Found")
+            st.error("Disease Model: Not Found")
             st.info("Run: python disease_ai.py")
-    
-    st.info("👈 Select a tool from the sidebar!")
+
+    st.info("Select a tool from the sidebar!")
 
 
 def show_concentration_predictor():
     """Concentration prediction with all 17 features using CORRECT values"""
-    st.markdown('<h2 class="sub-header">📊 Pollutant Concentration Predictor</h2>', unsafe_allow_html=True)
+    st.markdown('<h2 class="sub-header">Pollutant Concentration Predictor</h2>', unsafe_allow_html=True)
     
     model_package = load_concentration_model()
     
     if model_package is None:
-        st.error("⚠️ Concentration model not found. Please train the model first.")
+        st.error("Concentration model not found. Please train the model first.")
         st.code("python concentration_ai.py", language="python")
         return
-    
-    st.success(f"✅ Model: {model_package['model_name']}")
+    st.success(f"Model: {model_package['model_name']}")
     
     required_features = model_package['feature_names']
-    st.info(f"📋 Uses {len(required_features)} features")
+    st.info(f"Uses {len(required_features)} features")
     
-    with st.expander("🔍 Required Features"):
+    with st.expander("Required Features"):
         for i, feature in enumerate(required_features, 1):
             st.write(f"{i}. {feature}")
     
     st.markdown("---")
-    st.markdown("### 🔧 Input Parameters")
-    
-    # Basic pollutant information
+    st.markdown("### Input Parameters")
     col1, col2, col3 = st.columns(3)
     
     with col1:
@@ -260,8 +248,7 @@ def show_concentration_predictor():
         soil_om = st.slider("Soil Organic Matter (%)", min_value=0.5, max_value=10.0, value=3.0, step=0.1)
         cec = st.slider("CEC (meq/100g)", min_value=1.0, max_value=50.0, value=12.0, step=0.5)
     
-    # Environmental conditions
-    st.markdown("### 🌍 Environmental Conditions")
+    st.markdown("### Environmental Conditions")
     
     col4, col5, col6 = st.columns(3)
     
@@ -276,8 +263,7 @@ def show_concentration_predictor():
     with col6:
         country = st.selectbox("Country", DATASET_VALUES['countries'])
         
-    # Agricultural factors
-    st.markdown("### 🌾 Agricultural Factors")
+    st.markdown("### Agricultural Factors")
     
     col7, col8, col9 = st.columns(3)
     
@@ -294,8 +280,8 @@ def show_concentration_predictor():
         water_source = st.selectbox("Water Source Type", DATASET_VALUES['water_sources'])
     
     st.markdown("---")
-    
-    if st.button("🔬 Predict Concentration", type="primary", use_container_width=True):
+
+    if st.button("Predict Concentration", type="primary", use_container_width=True):
         
         # Create input data with all 17 features
         input_data = pd.DataFrame([{
@@ -335,7 +321,7 @@ def show_concentration_predictor():
             
             # Display results
             st.markdown('<div class="prediction-box">', unsafe_allow_html=True)
-            st.markdown("### 🎯 Prediction Results")
+            st.markdown("### Prediction Results")
             
             col1, col2, col3, col4 = st.columns(4)
             
@@ -348,13 +334,12 @@ def show_concentration_predictor():
                 st.metric("Bioavailability %", f"{ratio*100:.1f}%")
             with col4:
                 risk = "Low" if prediction < 50 else ("Moderate" if prediction < 150 else "High")
-                color = "🟢" if prediction < 50 else ("🟡" if prediction < 150 else "🔴")
-                st.metric("Risk Level", f"{color} {risk}")
+                st.metric("Risk Level", f"{risk}")
             
             st.markdown('</div>', unsafe_allow_html=True)
             
             # Analysis
-            st.markdown("### 📊 Analysis")
+            st.markdown("### Analysis")
             
             col1, col2 = st.columns(2)
             
@@ -378,14 +363,14 @@ def show_concentration_predictor():
                 """)
             
             # Recommendations
-            st.markdown("### 💡 Recommendations")
-            
+            st.markdown("### Recommendations")
+
             if prediction < 50:
-                st.success("✅ Low contamination - continue regular monitoring")
+                st.success("Low contamination - continue regular monitoring")
             elif prediction < 150:
-                st.warning("⚠️ Moderate contamination - consider pH adjustment and crop rotation")
+                st.warning("Moderate contamination - consider pH adjustment and crop rotation")
             else:
-                st.error("🚨 High contamination - immediate soil remediation required!")
+                st.error("High contamination - immediate soil remediation required!")
                 
         except Exception as e:
             st.error(f"Prediction error: {str(e)}")
@@ -398,26 +383,25 @@ def show_concentration_predictor():
 
 def show_disease_predictor():
     """Disease prediction with all 21 features using CORRECT values"""
-    st.markdown('<h2 class="sub-header">🏥 Disease Type Predictor</h2>', unsafe_allow_html=True)
+    st.markdown('<h2 class="sub-header">Disease Type Predictor</h2>', unsafe_allow_html=True)
     
     model_package = load_disease_model()
     
     if model_package is None:
-        st.error("⚠️ Disease model not found. Please train the model first.")
+        st.error("Disease model not found. Please train the model first.")
         st.code("python disease_ai.py", language="python")
         return
-    
-    st.success(f"✅ Model: {model_package['model_name']}")
+    st.success(f"Model: {model_package['model_name']}")
     
     required_features = model_package['feature_names']
-    st.info(f"📋 Uses {len(required_features)} features")
+    st.info(f"Uses {len(required_features)} features")
     
-    with st.expander("🔍 Required Features"):
+    with st.expander("Required Features"):
         for i, feature in enumerate(required_features, 1):
             st.write(f"{i}. {feature}")
     
     st.markdown("---")
-    st.markdown("### 🔧 Input Parameters")
+    st.markdown("### Input Parameters")
     
     # Pollutant information
     col1, col2, col3 = st.columns(3)
@@ -439,8 +423,7 @@ def show_disease_predictor():
         temperature = st.slider("Temperature (°C)", min_value=-5.0, max_value=45.0, value=20.0, step=0.5, key='d_temp')
         humidity = st.slider("Humidity (%)", min_value=10.0, max_value=100.0, value=60.0, step=1.0, key='d_hum')
     
-    # Environmental and geographical
-    st.markdown("### 🌍 Environmental & Geographic")
+    st.markdown("### Environmental & Geographic")
     
     col4, col5, col6 = st.columns(3)
     
@@ -456,8 +439,7 @@ def show_disease_predictor():
         farming = st.selectbox("Farming Practice", DATASET_VALUES['farming_practices'], key='d_farm')
         nearby_industry = st.selectbox("Nearby Industry", DATASET_VALUES['industries'], key='d_ind')
     
-    # Exposure and health factors
-    st.markdown("### 🏥 Health & Exposure Factors")
+    st.markdown("### Health & Exposure Factors")
     
     col7, col8, col9 = st.columns(3)
     
@@ -475,7 +457,7 @@ def show_disease_predictor():
     
     st.markdown("---")
     
-    if st.button("🔬 Predict Disease Type", type="primary", use_container_width=True):
+    if st.button("Predict Disease Type", type="primary", use_container_width=True):
         
         # Create input data with all 21 features
         input_data = pd.DataFrame([{
@@ -522,16 +504,14 @@ def show_disease_predictor():
             disease_type = model_package['target_encoder'].inverse_transform([disease_pred])[0]
             confidence = max(disease_proba) * 100
             
-            # Calculate risk factors
             vuln_mult = {'Children': 3.0, 'Elderly': 1.5, 'Adults': 1.0}[age_group]
             time_mult = min(2.0, 0.5 + (years_contaminated / 10))
             effective_conc = bioavailable * vuln_mult * time_mult
             
             severity = "Mild" if effective_conc < 10 else ("Moderate" if effective_conc < 50 else "Severe")
             
-            # Display results
             st.markdown('<div class="prediction-box">', unsafe_allow_html=True)
-            st.markdown("### 🎯 Disease Prediction Results")
+            st.markdown("### Disease Prediction Results")
             
             col1, col2, col3, col4 = st.columns(4)
             
@@ -546,8 +526,7 @@ def show_disease_predictor():
             
             st.markdown('</div>', unsafe_allow_html=True)
             
-            # Detailed analysis
-            st.markdown("### 📊 Detailed Analysis")
+            st.markdown("### Detailed Analysis")
             
             col1, col2 = st.columns(2)
             
@@ -569,15 +548,14 @@ def show_disease_predictor():
                 - Distance from Source: {distance} km
                 """)
             
-            # Recommendations
-            st.markdown("### 💡 Health Recommendations")
-            
+            st.markdown("### Health Recommendations")
+
             if severity == "Mild":
-                st.success("✅ Mild risk - Regular health monitoring recommended")
+                st.success("Mild risk - Regular health monitoring recommended")
             elif severity == "Moderate":
-                st.warning("⚠️ Moderate risk - Medical screening and lifestyle changes advised")
+                st.warning("Moderate risk - Medical screening and lifestyle changes advised")
             else:
-                st.error("🚨 Severe risk - Immediate medical consultation required!")
+                st.error("Severe risk - Immediate medical consultation required!")
                 
         except Exception as e:
             st.error(f"Prediction error: {str(e)}")
@@ -589,7 +567,6 @@ def show_disease_predictor():
 
 
 def show_dataset_visualizations():
-    """Display dataset analysis visualizations from visualizations/ folder"""
     st.markdown('<h2 class="sub-header">📊 Dataset Analysis Visualizations</h2>', unsafe_allow_html=True)
     
     viz_dir = 'visualizations'
@@ -598,7 +575,6 @@ def show_dataset_visualizations():
         st.code("python visualization.py", language="bash")
         return
     
-    # Expected dataset visualization files
     dataset_viz_files = [
         'ph_bioavailability_analysis.png',
         'soil_texture_analysis.png',
@@ -615,14 +591,13 @@ def show_dataset_visualizations():
             available_viz.append((viz_file, viz_path))
     
     if not available_viz:
-        st.warning("⚠️ No dataset visualization images found in visualizations/ folder.")
+        st.warning("No dataset visualization images found in visualizations/ folder.")
         st.info("Generate them by running:")
         st.code("python visualization.py", language="bash")
         return
     
-    st.success(f"✅ Found {len(available_viz)} dataset visualization(s)")
+    st.success(f"Found {len(available_viz)} dataset visualization(s)")
     
-    # Create tabs for different visualizations
     tab_names = []
     tab_contents = []
     
@@ -644,17 +619,14 @@ def show_dataset_visualizations():
 
 
 def show_model_performance():
-    """Display model performance visualizations from models/ folder"""
     st.markdown('<h2 class="sub-header">🔍 Model Performance Visualizations</h2>', unsafe_allow_html=True)
     
-    # Check if models directory exists
     models_dir = 'models'
     if not os.path.exists(models_dir):
         st.error("⚠️ Models directory not found. Train the models first.")
         st.code("python concentration_ai.py\npython disease_ai.py", language="bash")
         return
     
-    # Model visualization files to look for
     model_viz_files = [
         'concentration_model_comparison.png',
         'concentration_feature_importance.png',
@@ -677,7 +649,6 @@ def show_model_performance():
     
     st.success(f"✅ Found {len(available_viz)} model performance visualization(s)")
     
-    # Separate by model type
     concentration_viz = []
     disease_viz = []
     
@@ -687,7 +658,6 @@ def show_model_performance():
         elif 'disease' in viz_name:
             disease_viz.append((viz_name, viz_path))
     
-    # Create tabs for concentration and disease models
     if concentration_viz or disease_viz:
         tabs = st.tabs(["📊 Concentration Model", "🏥 Disease Model"])
         
@@ -719,7 +689,6 @@ def show_model_performance():
             else:
                 st.info("No disease model visualizations found.")
     
-    # Also show model information if available
     st.markdown("### Model Information")
     
     col1, col2 = st.columns(2)
@@ -752,7 +721,6 @@ def show_model_performance():
 
 
 def show_about():
-    """About page"""
     st.markdown('<h2 class="sub-header">ℹ️ About This System</h2>', unsafe_allow_html=True)
     
     st.markdown("""
